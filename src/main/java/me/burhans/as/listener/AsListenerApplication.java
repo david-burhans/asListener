@@ -1,13 +1,19 @@
 package me.burhans.as.listener;
 
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
-
-import me.burhans.as.listener.config.SocketConfiguration;
 
 @SpringBootApplication
-@EnableConfigurationProperties(SocketConfiguration.class)
+@EnableAutoConfiguration
 public class AsListenerApplication
 {
-
+	public static void main(
+		final String[] arguments)
+	{
+		SpringApplication
+		.run(
+			AsListenerApplication.class,
+			arguments);
+	}
 }

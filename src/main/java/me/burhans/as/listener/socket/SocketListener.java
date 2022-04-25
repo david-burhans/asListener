@@ -23,13 +23,15 @@ public class SocketListener
 {
 	private final AtomicBoolean continueListening;
 	private final ExecutorService executorService;
-	private SocketConfiguration socketConfiguration;
+	private final SocketConfiguration socketConfiguration;
 
-	public SocketListener()
+	public SocketListener(final SocketConfiguration socketConfiguration)
 	{
 		executorService = Executors.newFixedThreadPool(1);
 
 		continueListening = new AtomicBoolean(true);
+
+		this.socketConfiguration = socketConfiguration;
 	}
 
 	@PreDestroy
@@ -61,8 +63,13 @@ public class SocketListener
 
 					input = reader.readLine();
 
-					log.info("message read from the socket: {}", input);
+					if (input != null)
+					{
+						log.info("message read from the socket: {}", input);
+					}
 				}
+
+				log.info("in lambda, after while loop: {}", continueListening.get());
 			}
 			catch (final IOException exception)
 			{
@@ -75,13 +82,24 @@ public class SocketListener
 	{
 		continueListening.getAndSet(false);
 
+		log.info("stop called; continueListening: " + continueListening.get());
+
 		try
 		{
+			log.info("before awaitTermination; continueListening: " + continueListening.get());
+
 			executorService.awaitTermination(250, TimeUnit.MILLISECONDS);
+
+			log.info("after awaitTermination; continueListening: " + continueListening.get());
+
 		}
 		catch (final InterruptedException ignoredException)
 		{
+			log.info("in catch block, before shutdownNow; continueListening: " + continueListening.get());
+
 			executorService.shutdownNow(); // force shutdown the pool.
+
+			log.info("in catch block, after shutdownNow; continueListening: " + continueListening.get());
 		}
 	}
 }

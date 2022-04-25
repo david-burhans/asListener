@@ -14,7 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Component
 @AllArgsConstructor
-public class ThreadManager
+public class SocketManager
 {
 	private final ScheduledExecutorService scheduledExecutorService;
 	private final SocketListener socketListener;
@@ -22,21 +22,26 @@ public class ThreadManager
 	@EventListener
 	public void handleSocketStartEvent(final SocketStartEvent socketStartEvent)
 	{
-		startTheListener();
+		startListener();
 	}
 
 	@PostConstruct
 	public void postConstruct()
 	{
-		startTheListener();
+		startListener();
 	}
 
-	private void startTheListener()
+	public void startListener()
 	{
 		scheduledExecutorService.schedule(() -> {
 			socketListener.start();
 
 			log.info("started socketListener");
 		}, 1500, TimeUnit.MILLISECONDS);
+	}
+
+	public void stopListener()
+	{
+		socketListener.stop();
 	}
 }
