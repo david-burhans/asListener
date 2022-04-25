@@ -32,13 +32,6 @@ public class SocketListener
 		continueListening = new AtomicBoolean(true);
 	}
 
-	public void listen()
-	{
-		continueListening.getAndSet(true);
-
-		// TODO
-	}
-
 	@PreDestroy
 	public void preDestroy()
 	{
@@ -51,6 +44,8 @@ public class SocketListener
 		{
 			stop();
 		}
+
+		continueListening.getAndSet(true);
 
 		executorService.execute(() -> {
 			final BufferedReader reader;
@@ -74,15 +69,15 @@ public class SocketListener
 				log.error("Exception while opening the server socket", exception);
 			}
 		});
-
 	}
 
 	public void stop()
 	{
 		continueListening.getAndSet(false);
+
 		try
 		{
-			executorService.awaitTermination(500, TimeUnit.MILLISECONDS);
+			executorService.awaitTermination(250, TimeUnit.MILLISECONDS);
 		}
 		catch (final InterruptedException ignoredException)
 		{
